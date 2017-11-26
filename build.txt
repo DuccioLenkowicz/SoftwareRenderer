@@ -1,0 +1,2 @@
+build on windows 
+clang -o main.exe -I include src/*.c tests/*.c -L lib/SDL2 -lSDL2
