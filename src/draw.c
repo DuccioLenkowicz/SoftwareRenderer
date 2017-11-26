@@ -1,4 +1,4 @@
-#include <draw.h>
+#include<draw.h>
 #include<cg_math.h>
 #include<utils.h>
 
@@ -130,10 +130,12 @@ void draw_context_draw_line_bresenham(draw_context_t *context, int x1, int y1, i
 
 void draw_context_draw_mesh(draw_context_t *context, mesh_t *mesh, cam_t *cam, draw_color_t color)
 {
-    mat4x4_t proj       = cam_get_proj(cam);
-    mat4x4_t view       = cam_get_view(cam);
-    mat4x4_t model      = mesh_get_trasform(mesh);
-    mat4x4_t model_view = mat4x4_mul(view, model);
+    mat4x4_t proj               = cam_get_proj(cam);
+    mat4x4_t view               = cam_get_view(cam);
+    mat4x4_t model              = mesh_get_trasform(mesh);
+    mat4x4_t model_view         = mat4x4_mul(view, model);
+    mat4x4_t model_view_proj    = mat4x4_mul(proj, model_view);
+    
 
     for(unsigned long i = 0; i < mesh->f_count; i += 3)
     {
@@ -155,37 +157,23 @@ void draw_context_draw_mesh(draw_context_t *context, mesh_t *mesh, cam_t *cam, d
         float z3 = mesh->v[3 * f3 + 2];
         
         // vertex shader
-        vec4_t v14 = {x1, y1, z1, 1};
-        vec4_t v24 = {x2, y2, z2, 1};
-        vec4_t v34 = {x3, y3, z3, 1};
+        vec4_t v[3];
+        v[0] = vec4_create(x1, y1, z1, 1);
+        v[1] = vec4_create(x2, y2, z2, 1);
+        v[2] = vec4_create(x3, y3, z3, 1);
 
-        v14 = mat4x4_mul_vec4(model_view, v14);
-        v24 = mat4x4_mul_vec4(model_view, v24);
-        v34 = mat4x4_mul_vec4(model_view, v34);
-
-        v14 = mat4x4_mul_vec4(proj, v14);
-        v24 = mat4x4_mul_vec4(proj, v24);
-        v34 = mat4x4_mul_vec4(proj, v34);
+        for(int k = 0; k < 3; k++)
+            v[k] = mat4x4_mul_vec4(model_view_proj, v[k]);
 
         // clipping
         
-        // perspective division
-        vec3_t v1 = {v14.x, v14.y, v14.z};
-        vec3_t v2 = {v24.x, v24.y, v24.z};
-        vec3_t v3 = {v34.x, v34.y, v34.z};
-
-        v1.x /= v14.w;
-        v1.y /= v14.w;
-
-        v2.x /= v24.w;
-        v2.y /= v24.w;
-
-        v3.x /= v34.w;
-        v3.y /= v34.w;
+        //perspective division
+        for(int k = 0; k < 3; k++)
+            v[k] = vec4_scaled(v[k], 1 / v[k].w);
 
 
         // rasterize
-        draw_context_draw_triangle(context, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, color);
+        draw_context_draw_triangle(context, v[0].x, v[0].y, v[1].x, v[1].y, v[2].x, v[2].y, color);
     }
 }
 
