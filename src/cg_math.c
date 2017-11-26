@@ -414,6 +414,7 @@ mat4x4_t mat4x4_ortho(float left, float right, float bottom, float top, float z_
                          0.0f,      0.0f,       0.0f,       1.0f);
 }
 
+// remap point inside frustum like this: near far -> -1 1, left right -> -1 1, bottom top -> -1 1
 mat4x4_t mat4x4_persp(float left, float right, float bottom, float top, float z_near, float z_far)
 {
     float w = right - left;
@@ -434,7 +435,7 @@ mat4x4_t mat4x4_persp(float left, float right, float bottom, float top, float z_
 
     return mat4x4_create(2.0f * z_near /w,    0.0f,                           (right + left) / w,          0.0f,
                          0.0f,                2.0f * z_near / h,              (top + bottom) / h,          0.0f,
-                         0.0f,                0.0f,                           (z_far + z_near) / d,       2.0f * z_far * z_near/ d, 
+                         0.0f,                0.0f,                           -(z_far + z_near) / d,       -2.0f * z_far * z_near/ d, 
                          0.0f,                0.0f,                           -1.0f,                       0.0f);
 }
 
