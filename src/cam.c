@@ -19,7 +19,7 @@ cam_t *cam_new()
     return cam;
 }
 
-void *cam_destroy(cam_t *cam)
+void cam_destroy(cam_t *cam)
 {
     free(cam);
 }

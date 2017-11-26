@@ -16,7 +16,7 @@ struct cam
 typedef struct cam cam_t;
 
 cam_t *cam_new();
-void *cam_destroy(cam_t *);
+void cam_destroy(cam_t *);
 void cam_set_persp(cam_t *, float, float, float, float);
 void cam_set_ortho(cam_t *, float, float, float, float, float, float);
 mat4x4_t cam_get_view(cam_t *);
