@@ -196,6 +196,76 @@ vec3_t vec3_refracted(vec3_t i, vec3_t n, float ior)
     return vec3_add(vec3_scaled(i, eta), vec3_scaled(n, eta * cosi - sqrtf(k)));
 }
 
+vec4_t vec4_create(float x, float y, float z, float w)
+{
+    vec4_t v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    v.w = w;
+    return v;
+}
+
+vec4_t vec4_add(vec4_t v1, vec4_t v2)
+{
+    return vec4_create(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w); 
+}
+
+vec4_t vec4_sub(vec4_t v1, vec4_t v2)
+{
+    return vec4_create(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w); 
+}
+
+float vec4_dot(vec4_t v1, vec4_t v2)
+{
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w; 
+}
+
+vec4_t vec4_mul(vec4_t v1, vec4_t v2)
+{
+    return vec4_create(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z, v1.w * v2.w); 
+}
+
+vec4_t vec4_scaled(vec4_t v, float s)
+{
+    return vec4_create(v.x * s, v.y * s, v.z * s, v.w * s); 
+}
+
+float vec4_len(vec4_t v)
+{
+    return sqrt(vec4_len_sq(v));
+}
+
+float vec4_len_sq(vec4_t v)
+{
+    return vec4_dot(v, v);
+}
+
+void vec4_normalize(vec4_t *v)
+{
+    vec4_t temp = vec4_create(v->x, v->y, v->z, v->w);
+    float len = vec4_len(temp);
+
+    if(len == 0)
+        return;
+
+    v->x /= len;
+    v->y /= len;
+    v->z /= len;
+    v->w /= len;
+}
+
+vec4_t vec4_normalized(vec4_t v)
+{
+    float len = vec4_len(v);
+
+    if(len == 0)
+        return v;
+    
+    return vec4_create(v.x / len, v.y / len, v.z / len, v.w / len);
+}
+
+
 //TODO: implement from euler angle, slerp and rotation between vectors
 // consider normalizing the result of mul to avoid floating point issues
 quat_t quat_create(float x, float y, float z, float w)
