@@ -130,6 +130,11 @@ void draw_context_draw_line_bresenham(draw_context_t *context, int x1, int y1, i
 
 void draw_context_draw_mesh(draw_context_t *context, mesh_t *mesh, cam_t *cam, draw_color_t color)
 {
+    mat4x4_t proj       = cam_get_proj(cam);
+    mat4x4_t view       = cam_get_view(cam);
+    mat4x4_t model      = mesh_get_trasform(mesh);
+    mat4x4_t model_view = mat4x4_mul(view, model);
+
     for(unsigned long i = 0; i < mesh->f_count; i += 3)
     {
         // find current face vertices
@@ -150,10 +155,6 @@ void draw_context_draw_mesh(draw_context_t *context, mesh_t *mesh, cam_t *cam, d
         float z3 = mesh->v[3 * f3 + 2];
         
         // vertex shader
-        mat4x4_t model      = mesh_get_trasform(mesh);
-        mat4x4_t view       = cam_get_view(cam);
-        mat4x4_t model_view = mat4x4_mul(view, model);
-
         vec4_t v14 = {x1, y1, z1, 1};
         vec4_t v24 = {x2, y2, z2, 1};
         vec4_t v34 = {x3, y3, z3, 1};
@@ -162,11 +163,11 @@ void draw_context_draw_mesh(draw_context_t *context, mesh_t *mesh, cam_t *cam, d
         v24 = mat4x4_mul_vec4(model_view, v24);
         v34 = mat4x4_mul_vec4(model_view, v34);
 
-        mat4x4_t proj = cam_get_proj(cam);
         v14 = mat4x4_mul_vec4(proj, v14);
         v24 = mat4x4_mul_vec4(proj, v24);
         v34 = mat4x4_mul_vec4(proj, v34);
 
+        // clipping
         
         // perspective division
         vec3_t v1 = {v14.x, v14.y, v14.z};
@@ -182,7 +183,6 @@ void draw_context_draw_mesh(draw_context_t *context, mesh_t *mesh, cam_t *cam, d
         v3.x /= v34.w;
         v3.y /= v34.w;
 
-        // clipping
 
         // rasterize
         draw_context_draw_triangle(context, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, color);
@@ -212,6 +212,7 @@ void draw_context_draw_triangle(draw_context_t *context, float x1, float y1, flo
     int min_x = min_int(p1x, min_int(p2x, p3x));
     int max_y = max_int(p1y, max_int(p2y, p3y));
     int min_y = min_int(p1y, min_int(p2y, p3y));
+
     for(int j = min_y; j <= max_y; j++)
     {
         for(int i = min_x; i <= max_x; i++)
