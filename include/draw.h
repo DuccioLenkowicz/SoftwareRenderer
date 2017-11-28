@@ -44,6 +44,8 @@ void draw_context_put_pixel(draw_context_t *, int, int, draw_color_t);
 void draw_context_draw_line_bresenham(draw_context_t *, int, int, int, int, draw_color_t);
 void draw_context_draw_mesh(draw_context_t *, mesh_t *, cam_t *, draw_color_t);
 void draw_context_draw_triangle(draw_context_t *, float, float, float, float, float, float, draw_color_t);
+void draw_context_draw_triangle_flat_top(draw_context_t *, float, float, float, float, float, float, draw_color_t);
+void draw_context_draw_triangle_flat_bottom(draw_context_t *, float, float, float, float, float, float, draw_color_t);
 uint8_t draw_context_get_key(draw_context_t *, SDL_Scancode);
 
 #endif

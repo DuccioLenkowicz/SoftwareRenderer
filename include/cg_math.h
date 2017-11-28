@@ -152,7 +152,7 @@ mat4x4_t mat4x4_transl(vec3_t);
 
 mat4x4_t mat4x4_model(vec3_t, vec3_t, quat_t);
 
-mat4x4_t mat4x4_lookat(vec3_t, quat_t);
+mat4x4_t mat4x4_lookat(vec3_t, vec3_t, vec3_t);
 
 mat4x4_t mat4x4_ortho(float, float, float, float, float, float);
 

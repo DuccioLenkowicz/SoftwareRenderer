@@ -441,22 +441,19 @@ mat4x4_t mat4x4_model(vec3_t p, vec3_t s, quat_t q)
 }
 
 // world space forward : z+, cam space forward : z-
-mat4x4_t mat4x4_lookat(vec3_t pos, quat_t rot)
+mat4x4_t mat4x4_lookat(vec3_t eye, vec3_t target, vec3_t up)
 {
-    vec3_t xw = {1, 0, 0};
-    vec3_t yw = {0, 1, 0};
-    vec3_t zw = {0, 0, 1};
-    
     // camera axis in world space
-    vec3_t x = quat_rotated_vec(xw, rot);
-    vec3_t y = quat_rotated_vec(yw, rot);
-    vec3_t z = quat_rotated_vec(zw, rot);
+    vec3_t z = vec3_normalized(vec3_sub(eye, target));
+    vec3_t x = vec3_normalized(vec3_cross(up, z));
+    vec3_t y = vec3_cross(z, x);
     
     // reversed camera transform
-    return mat4x4_create(x.x, y.x, -z.x, -vec3_dot(pos, x),
-                         x.y, y.y, -z.y, -vec3_dot(pos, y),
-                         x.z, y.z, -z.z,  vec3_dot(pos, z),
+    return mat4x4_create(x.x, y.x, z.x, -vec3_dot(eye, x),
+                         x.y, y.y, z.y, -vec3_dot(eye, y),
+                         x.z, y.z, z.z, -vec3_dot(eye, z),
                          0.0f, 0.0f, 0.0f, 1.0f);
+
 }
 
 // double check this
@@ -503,8 +500,8 @@ mat4x4_t mat4x4_persp(float left, float right, float bottom, float top, float z_
         return mat4x4_identity;
     }
 
-    return mat4x4_create(2.0f * z_near /w,    0.0f,                           (right + left) / w,          0.0f,
-                         0.0f,                2.0f * z_near / h,              (top + bottom) / h,          0.0f,
+    return mat4x4_create(2.0f * z_near /w,    0.0f,                           0.0f,                        0.0f,
+                         0.0f,                2.0f * z_near / h,              0.0f,                        0.0f,
                          0.0f,                0.0f,                           -(z_far + z_near) / d,       -2.0f * z_far * z_near/ d, 
                          0.0f,                0.0f,                           -1.0f,                       0.0f);
 }

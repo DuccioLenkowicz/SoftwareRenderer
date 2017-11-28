@@ -49,7 +49,7 @@ void cam_set_ortho(cam_t *cam, float left, float right, float top, float bottom,
 
 mat4x4_t cam_get_view(cam_t *cam)
 {
-    return mat4x4_lookat(cam->pos, cam->rot);
+    return mat4x4_lookat(cam->pos, vec3_add(cam->pos, quat_rotated_vec(vec3_create(0, 0, 1), cam->rot)), vec3_create(0, 1, 0));
 }
 
 mat4x4_t cam_get_proj(cam_t *cam)
