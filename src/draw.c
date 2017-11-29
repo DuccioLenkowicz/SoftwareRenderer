@@ -140,48 +140,18 @@ void draw_context_draw_mesh(draw_context_t *context, mesh_t *mesh, cam_t *cam, d
     mat4x4_t model_view         = mat4x4_mul(view, model);
     mat4x4_t model_view_proj    = mat4x4_mul(proj, model_view);
 
-    for(unsigned long i = 0; i < mesh->f->count; i += 9)
+    int i = 0;
+    while(i < mesh->f->count)
     {
-        // find current face vertices
-        unsigned long f1 = mesh->f->data[i];
-        unsigned long f2 = mesh->f->data[i + 3];
-        unsigned long f3 = mesh->f->data[i + 6];
-        
-        float x1 = mesh->v->data[3 * f1];
-        float y1 = mesh->v->data[3 * f1 + 1];
-        float z1 = mesh->v->data[3 * f1 + 2];
+        triangle_t t;
+        mesh_iter(mesh, &t, &i);
 
-        float x2 = mesh->v->data[3 * f2];
-        float y2 = mesh->v->data[3 * f2 + 1];
-        float z2 = mesh->v->data[3 * f2 + 2];
-
-        float x3 = mesh->v->data[3 * f3];
-        float y3 = mesh->v->data[3 * f3 + 1];
-        float z3 = mesh->v->data[3 * f3 + 2];
-
-        // backface culling
-        vec4_t v14 = mat4x4_mul_vec4(model, vec4_create(x1, y1, z1, 1));
-        vec4_t v24 = mat4x4_mul_vec4(model, vec4_create(x2, y2, z2, 1));
-        vec4_t v34 = mat4x4_mul_vec4(model, vec4_create(x3, y3, z3, 1));
-
-        vec3_t v1 = {v14.x, v14.y, v14.z};
-        vec3_t v2 = {v24.x, v24.y, v24.z};
-        vec3_t v3 = {v34.x, v34.y, v34.z};
-
-        vec3_t t1 = (vec3_sub(v2, v1));
-        vec3_t t2 = (vec3_sub(v3, v1));
-        vec3_t p = vec3_add(vec3_scaled(vec3_normalized(t1), vec3_len(t1) * 0.5), vec3_add(vec3_scaled(vec3_normalized(t2), vec3_len(t2) * 0.5), v1));
-        vec3_t n = vec3_cross(vec3_normalized(t1), vec3_normalized(t2));
-        vec3_t cam_view = vec3_normalized(vec3_sub(p, cam->pos));
-        if(vec3_dot(n, cam_view) > 0)
-            continue;
-        
         // vertex shader
         vec4_t v[3];
-        v[0] = vec4_create(x1, y1, z1, 1);
-        v[1] = vec4_create(x2, y2, z2, 1);
-        v[2] = vec4_create(x3, y3, z3, 1);
-        
+        v[0] = vec4_create(t.v[0].v.x, t.v[0].v.y, t.v[0].v.z, 1);
+        v[1] = vec4_create(t.v[1].v.x, t.v[1].v.y, t.v[1].v.z, 1);
+        v[2] = vec4_create(t.v[2].v.x, t.v[2].v.y, t.v[2].v.z, 1);
+
         for(int k = 0; k < 3; k++)
             v[k] = mat4x4_mul_vec4(model_view_proj, v[k]);
 
@@ -191,18 +161,7 @@ void draw_context_draw_mesh(draw_context_t *context, mesh_t *mesh, cam_t *cam, d
         for(int k = 0; k < 3; k++)
             v[k] = vec4_scaled(v[k], 1 / v[k].w);
         
-        // rasterize
-        if(i%2 == 0)
-        {
-            draw_color_t color = {2 * i, 0, 255, 255};
-            draw_context_draw_triangle(context, v[0].x, v[0].y, v[1].x, v[1].y, v[2].x, v[2].y, color);
-        }
-
-        else if(i%3 == 0)
-        {
-            draw_color_t color = {40 * i, i, 255, 255};
-            draw_context_draw_triangle(context, v[0].x, v[0].y, v[1].x, v[1].y, v[2].x, v[2].y, color);
-        }
+        draw_context_draw_triangle(context, v[0].x, v[0].y, v[1].x, v[1].y, v[2].x, v[2].y, color);
     }
 }
 
