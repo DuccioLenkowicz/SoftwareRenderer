@@ -40,24 +40,28 @@ void float_buffer_destroy(float_buffer_t *buffer)
 
 int float_buffer_add(float_buffer_t *buffer, float value)
 {
-    if(!buffer->data)
+    if(buffer->size == 0)
     {
         buffer->size = 4;
         buffer->data = malloc(sizeof(float) * buffer->size);
-        buffer->data[buffer->count++] = value;
-        return 0;
+        if (!buffer->data)
+        {
+            return -1;
+        }
+        memset(buffer->data, 0, sizeof(float) * buffer->size);
     }
-    if(buffer->count == buffer->size)
+    else if(buffer->count == buffer->size)
     {
-        float *new_data = realloc(buffer->data, sizeof(float) * buffer->size * 4);
+        uint64_t old_size = buffer->size;
+        buffer->size *= 4;
+        float *new_data = realloc(buffer->data, sizeof(float) * buffer->size);
         if (!new_data)
         {
             return -1;
         }
         buffer->data = new_data;
-        uint64_t remains = (sizeof(float) * buffer->size * 4) - (sizeof(float) * buffer->size);
-        memset(buffer->data + sizeof(float) * buffer->size, 0, remains);
-        buffer->size *= 4;
+        uint64_t remains = (sizeof(float) * buffer->size) - (sizeof(float) * old_size);
+        memset(buffer->data + old_size, 0, remains);
     }
 
     buffer->data[buffer->count++] = value;
@@ -102,24 +106,28 @@ void int_buffer_destroy(int_buffer_t *buffer)
 }
 int int_buffer_add(int_buffer_t *buffer, int32_t value)
 {
-    if(!buffer->data)
+    if(buffer->size == 0)
     {
         buffer->size = 4;
         buffer->data = malloc(sizeof(int32_t) * buffer->size);
-        buffer->data[buffer->count++] = value;
-        return 0;
+        if (!buffer->data)
+        {
+            return -1;
+        }
+        memset(buffer->data, 0, sizeof(int32_t) * buffer->size);
     }
-    if(buffer->count == buffer->size)
+    else if(buffer->count == buffer->size)
     {
-        int32_t *new_data = realloc(buffer->data, sizeof(int32_t) * buffer->size * 4);
+        uint64_t old_size = buffer->size;
+        buffer->size *= 4;
+        int32_t *new_data = realloc(buffer->data, sizeof(int32_t) * buffer->size);
         if (!new_data)
         {
             return -1;
         }
         buffer->data = new_data;
-        uint64_t remains = (sizeof(int32_t) * buffer->size * 4) - (sizeof(int32_t) * buffer->size);
-        memset(buffer->data + sizeof(int32_t) * buffer->size, 0, remains);
-        buffer->size *= 4;
+        uint64_t remains = (sizeof(int32_t) * buffer->size) - (sizeof(int32_t) * old_size);
+        memset(buffer->data + old_size, 0, remains);
     }
 
     buffer->data[buffer->count++] = value;
