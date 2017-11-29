@@ -36,10 +36,10 @@ mesh_t* mesh_load_obj(const char *file_name)
         return NULL;
     }
 
-    mesh->v = float_buffer_new(200, NULL);
-    mesh->f = int_buffer_new(200, NULL);
-    mesh->n = float_buffer_new(200, NULL);
-    mesh->uv = float_buffer_new(200, NULL);
+    mesh->v = float_buffer_new(0, NULL);
+    mesh->f = int_buffer_new(0, NULL);
+    mesh->n = float_buffer_new(0, NULL);
+    mesh->uv = float_buffer_new(0, NULL);
     
     const char *cur_line = file;
 
@@ -94,11 +94,11 @@ mesh_t* mesh_load_obj(const char *file_name)
         }
         else if(cur_line[0] == 'f')
         {
-            char *line_cpy = malloc(next_line - cur_line + 1);
-            memcpy(line_cpy, cur_line, next_line - cur_line);
+            char *line_cpy = malloc((unsigned long)(next_line - cur_line) + 2);
+            memcpy(line_cpy, cur_line, (unsigned long)(next_line - cur_line));
             line_cpy[next_line - cur_line + 1] = (char)0;
 
-            char tokens[4][100];
+            char tokens[4][1000];
 
             int i = 0;
             for(char *token = strtok(line_cpy, " "); token; token = strtok(NULL, " "))
@@ -113,17 +113,15 @@ mesh_t* mesh_load_obj(const char *file_name)
                 int j = 0;
                 for(char *token = strtok(&(tokens[i][0]), "/"); token; token = strtok(NULL, "/"))
                 {
-                    if(j < 3)
+                    if(j++ < 3)
                     {
                         int_buffer_add(mesh->f, atoi(token) - 1);
                     }
-                    j++;
                 }
             }
             
             free(line_cpy);
         }
-
 
         cur_line = next_line ? (next_line + 1) : NULL;
     }
