@@ -22,6 +22,22 @@ struct mesh
     vec3_t scale;
 };
 
+struct vertex
+{
+    vec3_t v;
+    vec3_t n;
+    vec2_t uv;
+};
+
+struct triangle
+{
+    struct vertex v[3];
+};
+
+typedef struct triangle triangle_t;
+
+typedef struct vertex vertex_t;
+
 typedef struct mesh mesh_t;
 
 mesh_t* mesh_load_obj(const char *);
@@ -34,7 +50,6 @@ mesh_t * mesh_new();
 
 void mesh_destroy(mesh_t *);
 
-const void *load_text(const char *);
-
+void mesh_iter(mesh_t *, triangle_t *, int *);
 
 #endif
