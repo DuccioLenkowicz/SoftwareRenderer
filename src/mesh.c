@@ -1,7 +1,6 @@
 #include <mesh.h>
 #include <utils.h>
 
-
 mesh_t *mesh_new()
 {
     mesh_t *mesh = malloc(sizeof(mesh_t));
@@ -130,4 +129,34 @@ mesh_t* mesh_load_obj(const char *file_name)
     }
     free((void *)file);
     return mesh;
+}
+
+void mesh_iter(mesh_t *mesh, triangle_t *triangle, int *face)
+{
+    int i = *face;
+    int fv1 = mesh->f->data[i];
+    int fn1 = mesh->f->data[i + 1];
+    int fuv1 = mesh->f->data[i + 2];
+
+    int fv2 = mesh->f->data[i + 3];
+    int fn2 = mesh->f->data[i + 4];
+    int fuv2 = mesh->f->data[i + 5];
+
+    int fv3 = mesh->f->data[i + 6];
+    int fn3 = mesh->f->data[i + 7];
+    int fuv3 = mesh->f->data[i + 8];
+
+    triangle->v[0].v = vec3_create(mesh->v->data[3 * fv1], mesh->v->data[3 * fv1 + 1], mesh->v->data[3 * fv1 + 2]);
+    triangle->v[0].n = vec3_create(mesh->n->data[3 * fn1], mesh->n->data[3 * fn1 + 1], mesh->n->data[3 * fn1 + 2]);
+    triangle->v[0].uv = vec2_create(mesh->uv->data[2 * fuv1], mesh->uv->data[2 * fuv1 + 1]);
+
+    triangle->v[1].v = vec3_create(mesh->v->data[3 * fv2], mesh->v->data[3 * fv2 + 1], mesh->v->data[3 * fv2 + 2]);
+    triangle->v[1].n = vec3_create(mesh->n->data[3 * fn2], mesh->n->data[3 * fn2 + 1], mesh->n->data[3 * fn2 + 2]);
+    triangle->v[1].uv = vec2_create(mesh->uv->data[2 * fuv2], mesh->uv->data[fuv2 + 1]);
+
+    triangle->v[2].v = vec3_create(mesh->v->data[3 * fv3], mesh->v->data[3 * fv3 + 1], mesh->v->data[3 * fv3 + 2]);
+    triangle->v[2].n = vec3_create(mesh->n->data[3 * fn3], mesh->n->data[3 * fn3 + 1], mesh->n->data[3 * fn3 + 2]);
+    triangle->v[2].uv = vec2_create(mesh->uv->data[2 * fuv1], mesh->uv->data[2 * fuv1 + 1]);
+
+    *face += 9;
 }
