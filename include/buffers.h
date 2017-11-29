@@ -28,6 +28,4 @@ int float_buffer_add(float_buffer_t *, float);
 int_buffer_t *int_buffer_new(uint64_t, int *);
 void int_buffer_destroy(int_buffer_t *);
 int int_buffer_add(int_buffer_t *, int32_t);
-
-
 #endif
