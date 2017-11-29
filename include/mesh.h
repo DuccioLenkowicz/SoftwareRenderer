@@ -7,13 +7,16 @@
 #include<string.h>
 #include<stdlib.h>
 #include<cg_math.h>
+#include<buffers.h>
 
 struct mesh
 {
-    float *v;
-    int *f;
-    unsigned long v_count;
-    unsigned long f_count;
+    float_buffer_t *v;
+    float_buffer_t *n;
+    float_buffer_t *uv;
+
+    int_buffer_t *f;
+    
     vec3_t pos;
     quat_t rot;
     vec3_t scale;
@@ -24,6 +27,10 @@ typedef struct mesh mesh_t;
 mesh_t* mesh_load_obj(const char *);
 
 mat4x4_t mesh_get_trasform(mesh_t *);
+
+mesh_t* mesh_load_obj(const char *);
+
+mesh_t * mesh_new();
 
 void mesh_destroy(mesh_t *);
 
