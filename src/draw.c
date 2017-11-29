@@ -140,24 +140,24 @@ void draw_context_draw_mesh(draw_context_t *context, mesh_t *mesh, cam_t *cam, d
     mat4x4_t model_view         = mat4x4_mul(view, model);
     mat4x4_t model_view_proj    = mat4x4_mul(proj, model_view);
 
-    for(unsigned long i = 0; i < mesh->f_count; i += 3)
+    for(unsigned long i = 0; i < mesh->f->count; i += 9)
     {
         // find current face vertices
-        unsigned long f1 = mesh->f[i];
-        unsigned long f2 = mesh->f[i + 1];
-        unsigned long f3 = mesh->f[i + 2];
+        unsigned long f1 = mesh->f->data[i];
+        unsigned long f2 = mesh->f->data[i + 3];
+        unsigned long f3 = mesh->f->data[i + 6];
         
-        float x1 = mesh->v[3 * f1];
-        float y1 = mesh->v[3 * f1 + 1];
-        float z1 = mesh->v[3 * f1 + 2];
+        float x1 = mesh->v->data[3 * f1];
+        float y1 = mesh->v->data[3 * f1 + 1];
+        float z1 = mesh->v->data[3 * f1 + 2];
 
-        float x2 = mesh->v[3 * f2];
-        float y2 = mesh->v[3 * f2 + 1];
-        float z2 = mesh->v[3 * f2 + 2];
+        float x2 = mesh->v->data[3 * f2];
+        float y2 = mesh->v->data[3 * f2 + 1];
+        float z2 = mesh->v->data[3 * f2 + 2];
 
-        float x3 = mesh->v[3 * f3];
-        float y3 = mesh->v[3 * f3 + 1];
-        float z3 = mesh->v[3 * f3 + 2];
+        float x3 = mesh->v->data[3 * f3];
+        float y3 = mesh->v->data[3 * f3 + 1];
+        float z3 = mesh->v->data[3 * f3 + 2];
 
         // backface culling
         vec4_t v14 = mat4x4_mul_vec4(model, vec4_create(x1, y1, z1, 1));
